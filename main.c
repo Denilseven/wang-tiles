@@ -67,15 +67,37 @@ void randomizegridfully(void) {
     }
 }
 
+void randomizegridlogic(void) {
+    for (int y = 0; y < GHEIGHT; y++) {
+        for (int x = 0; x < GWIDTH; x++) {
+            tileat(x, y)->t =
+                tileat(x, y-1) != NULL ? tileat(x, y-1)->b :
+                GetRandomValue(0, COLORSCOUNT-1);
+            tileat(x, y)->l =
+                tileat(x-1, y) != NULL ? tileat(x-1, y)->r :
+                GetRandomValue(0, COLORSCOUNT-1);
+            tileat(x, y)->b = GetRandomValue(0, COLORSCOUNT-1);
+            tileat(x, y)->r = GetRandomValue(0, COLORSCOUNT-1);
+        }
+    }
+}
+
 int main(void) {
     assert(GCOUNT % GWIDTH == 0);
-    randomizegridfully();
+    randomizegridlogic();
 
     InitWindow(GWIDTH*TPIXELSCALE, GHEIGHT*TPIXELSCALE, "wang tiles");
 
     while (!WindowShouldClose()) {
-        if (IsKeyPressed(KEY_SPACE)) {
+        if (IsKeyPressed(KEY_R) || IsKeyPressed(KEY_ONE)) {
             randomizegridfully();
+        }
+        if (
+            IsKeyPressed(KEY_SPACE) ||
+            IsKeyPressed(KEY_ENTER) ||
+            IsKeyPressed(KEY_TWO)
+        ) {
+            randomizegridlogic();
         }
 
         BeginDrawing();
