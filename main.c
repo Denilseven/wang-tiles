@@ -1,29 +1,30 @@
 #include <assert.h>
+#include <raylib.h>
 #include <stdio.h>
 
 // wang tiles
 
-// GWIDTH 4
-// GCOUNT 16
-
-//  0[0,0]  1[1,0]  2[2,0]  3[3,0]
-//  4[0,1]  5[1,1]  6[2,1]  7[3,1]
-//  8[0,2]  9[1,2] 10[2,2] 11[3,2]
-// 12[0,3] 13[1,3] 14[2,3] 15[3,3]
-
-// x = (int)a%GWIDTH
-// y = (int)a/GWIDTH
-
 struct tile {
-    unsigned t : 1; // top
-    unsigned r : 1; // right
-    unsigned b : 1; // bottom
-    unsigned l : 1; // left
+    unsigned t; // top
+    unsigned r; // right
+    unsigned b; // bottom
+    unsigned l; // left
 };
 typedef struct tile Tile;
 
-#define GWIDTH 8
-#define GCOUNT 64
+#define TPIXELSCALE 100
+#define COLORSCOUNT 5
+Color colors[COLORSCOUNT] = {
+    BLUE,
+    YELLOW,
+    ORANGE,
+    GREEN,
+    PURPLE,
+};
+
+#define GCOUNT 16
+#define GWIDTH 4
+#define GHEIGHT GCOUNT/GWIDTH
 Tile grid[GCOUNT] = {0};
 
 Tile *tileat(unsigned x, unsigned y) {
@@ -32,15 +33,44 @@ Tile *tileat(unsigned x, unsigned y) {
     return &grid[y*GWIDTH+x];
 }
 
+void drawtiletoscreenpos(Tile *ptr, unsigned x, unsigned y) {
+    Vector2 tl, tr, bl, br, center;
+    tl = tr = bl = br = (Vector2){x, y};
+    tr.x += TPIXELSCALE;
+    br.x += TPIXELSCALE;
+    bl.y += TPIXELSCALE;
+    br.y += TPIXELSCALE;
+    center = (Vector2){x+TPIXELSCALE/2, y+TPIXELSCALE/2};
+
+    DrawTriangle(center, tr, tl, colors[ptr->t]);
+    DrawTriangle(center, br, tr, colors[ptr->r]);
+    DrawTriangle(center, bl, br, colors[ptr->b]);
+    DrawTriangle(center, tl, bl, colors[ptr->l]);
+    DrawCircleV(tl, 3, RED);
+    DrawCircleV(tr, 3, GREEN);
+    DrawCircleV(bl, 3, BLUE);
+    DrawCircleV(br, 3, YELLOW);
+    DrawCircleV(center, 3, WHITE);
+}
+
 int main(void) {
     assert(GCOUNT % GWIDTH == 0);
 
-    grid[0].t = 1;
+    grid[0].t = 0;
+    grid[0].r = 1;
+    grid[0].b = 2;
+    grid[0].l = 3;
 
-    printf("%d\n", grid[0].t);
-    printf("%d\n", tileat(0, 7)->t);
+    InitWindow(GWIDTH*TPIXELSCALE, GHEIGHT*TPIXELSCALE, "wang tiles");
 
-    printf("Hello, World!");
+    while (!WindowShouldClose()) {
+        BeginDrawing();
+        ClearBackground(BLACK);
+        drawtiletoscreenpos(&grid[0], 25, 25);
+        EndDrawing();
+    }
+
+    CloseWindow();
     return 0;
 }
 

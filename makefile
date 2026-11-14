@@ -1,7 +1,7 @@
 COMPILER = cc
 SOURCES = main.c
 OUTPUT = out.out
-FLAGS = 
+FLAGS = -Iinclude -Llib -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
 
 default: build
 
