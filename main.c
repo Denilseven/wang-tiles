@@ -22,8 +22,8 @@ Color colors[COLORSCOUNT] = {
     PURPLE,
 };
 
-#define GCOUNT 16
-#define GWIDTH 4
+#define GCOUNT 64
+#define GWIDTH 8
 #define GHEIGHT GCOUNT/GWIDTH
 Tile grid[GCOUNT] = {0};
 
@@ -46,27 +46,41 @@ void drawtiletoscreenpos(Tile *ptr, unsigned x, unsigned y) {
     DrawTriangle(center, br, tr, colors[ptr->r]);
     DrawTriangle(center, bl, br, colors[ptr->b]);
     DrawTriangle(center, tl, bl, colors[ptr->l]);
-    DrawCircleV(tl, 3, RED);
-    DrawCircleV(tr, 3, GREEN);
-    DrawCircleV(bl, 3, BLUE);
-    DrawCircleV(br, 3, YELLOW);
-    DrawCircleV(center, 3, WHITE);
+}
+
+void drawgrid(void) {
+    for (int y = 0; y < GHEIGHT; y++) {
+        for (int x = 0; x < GWIDTH; x++) {
+            drawtiletoscreenpos(tileat(x, y), x*TPIXELSCALE, y*TPIXELSCALE);
+        }
+    }
+}
+
+void randomizegridfully(void) {
+    for (int y = 0; y < GHEIGHT; y++) {
+        for (int x = 0; x < GWIDTH; x++) {
+            tileat(x, y)->t = GetRandomValue(0, COLORSCOUNT-1);
+            tileat(x, y)->r = GetRandomValue(0, COLORSCOUNT-1);
+            tileat(x, y)->b = GetRandomValue(0, COLORSCOUNT-1);
+            tileat(x, y)->l = GetRandomValue(0, COLORSCOUNT-1);
+        }
+    }
 }
 
 int main(void) {
     assert(GCOUNT % GWIDTH == 0);
-
-    grid[0].t = 0;
-    grid[0].r = 1;
-    grid[0].b = 2;
-    grid[0].l = 3;
+    randomizegridfully();
 
     InitWindow(GWIDTH*TPIXELSCALE, GHEIGHT*TPIXELSCALE, "wang tiles");
 
     while (!WindowShouldClose()) {
+        if (IsKeyPressed(KEY_SPACE)) {
+            randomizegridfully();
+        }
+
         BeginDrawing();
         ClearBackground(BLACK);
-        drawtiletoscreenpos(&grid[0], 25, 25);
+        drawgrid();
         EndDrawing();
     }
 
