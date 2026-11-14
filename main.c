@@ -56,6 +56,17 @@ void drawgrid(void) {
     }
 }
 
+void drawgriddelayed(void) {
+    ClearBackground(BLACK);
+    for (int y = 0; y < GHEIGHT; y++) {
+        for (int x = 0; x < GWIDTH; x++) {
+            drawtiletoscreenpos(tileat(x, y), x*TPIXELSCALE, y*TPIXELSCALE);
+            EndDrawing();
+            WaitTime(1);
+        }
+    }
+}
+
 void randomizegridfully(void) {
     for (int y = 0; y < GHEIGHT; y++) {
         for (int x = 0; x < GWIDTH; x++) {
@@ -98,6 +109,10 @@ int main(void) {
             IsKeyPressed(KEY_TWO)
         ) {
             randomizegridlogic();
+        }
+        if (IsKeyPressed(KEY_THREE)) {
+            randomizegridlogic();
+            drawgriddelayed();
         }
 
         BeginDrawing();
